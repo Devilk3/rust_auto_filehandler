@@ -11,7 +11,6 @@ use sqlx::{Pool, mssql::Mssql};
 use tokio;
 use std::process::Command;
 
-
 fn read_config(config_path: &str) -> Result<Config, config::ConfigError> {
     let builder: ConfigBuilder<_> = Config::builder();
 
@@ -54,7 +53,7 @@ fn move_files(source: &str, destination: &str) -> io::Result<()> {
                 fs::copy(path, &dest_file)?;
 
                 // Remove the original file after copying
-               // fs::remove_file(path)?;
+                // fs::remove_file(path)?;
             }
         }
     }
@@ -88,8 +87,6 @@ async fn check_table_for_data(pool: &Pool<Mssql>, table_name: &str) -> Result<bo
     }
 }
 
-
-
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
 
@@ -107,17 +104,17 @@ async fn main() -> Result<(), sqlx::Error> {
     let destination_folder = config.get_string("paths.destination").expect("Failed to read destination path");
 
     let current_date = Local::now().format("%d-%m-%Y").to_string();
-
     let full_source_folder = format!("{}/{}", base_source_folder, current_date);
 
-
+    // Read database URL and JAR file path from the config
+    let database_url = config.get_string("database.url").expect("Failed to read database URL");
+    let jar_file_path = config.get_string("paths.jar_file").expect("Failed to read JAR file path");
 
     // Set up the database connection pool
-    let database_url = "mssql://ccmadmin:ccm@486*@172.16.5.208:1433/ccms10_New";
-    let pool = Pool::<Mssql>::connect(database_url).await?;
+    let pool = Pool::<Mssql>::connect(&database_url).await?;
 
     // Execute the stored procedure
-    let procedure_name = "USGIC_Health_BaseToRP";
+    let procedure_name = "USGIC_DiscrepancyIBPS_DBLink";
     execute_stored_procedure(&pool, procedure_name).await?;
 
     // Check if there is data in the table
@@ -128,10 +125,9 @@ async fn main() -> Result<(), sqlx::Error> {
         println!("Proceeding with further operations...");
 
         // Run the JAR file
-        let jar_file_path = "D:\\afsha\\Discrepancy_Utility.jar"; // Update this with your actual JAR file path
         let output = Command::new("java")
             .arg("-jar")
-            .arg(jar_file_path)
+            .arg(&jar_file_path)
             .output()
             .expect("Failed to execute JAR file");
 

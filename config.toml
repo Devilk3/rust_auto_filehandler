@@ -1,0 +1,8 @@
+[database]
+url = "mssql://ccmadmin:ccm@237*@172.16.6.83:1433/usgi_ccm"
+
+
+[paths]
+source = "D:\\OJT\\SourcePathBackup"
+destination = "D:\\OJT\\DestPath"
+jar_file = "D:\\DiscrepancyLogs\\Discrepancy_Utility.jar"
