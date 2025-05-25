@@ -1,5 +1,5 @@
 [database]
-url = "mssql://ccmadmin:ccm@237*@172.16.6.83:1433/usgi_ccm"
+url = "mssql://abcabcabc:pass123123@100.10.0.00:1433/dbnname"
 
 
 [paths]
